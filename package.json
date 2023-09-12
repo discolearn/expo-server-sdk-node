@@ -10,7 +10,6 @@
   "scripts": {
     "build": "./build.sh",
     "lint": "eslint src",
-    "prepare": "yarn build",
     "test": "jest",
     "tsc": "tsc",
     "watch": "tsc --watch"

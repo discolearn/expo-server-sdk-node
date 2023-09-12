@@ -9,6 +9,3 @@ node_modules/
 
 # Yarn
 /yarn-error.log
-
-# Build output
-/build/
