@@ -14,7 +14,7 @@ import zlib from 'zlib';
 import { requestRetryMinTimeout } from './ExpoClientValues';
 
 const BASE_URL = 'https://exp.host';
-const BASE_API_URL = `${BASE_URL}/--/api/v2`;
+const BASE_API_URL = process.env.EXPO_BASE_API_URL || `${BASE_URL}/--/api/v2`;
 
 /**
  * The max number of push notifications to be sent at once. Since we can't automatically upgrade
