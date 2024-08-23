@@ -1,4 +1,5 @@
 # expo-server-sdk-node ![Tests](https://github.com/expo/expo-server-sdk-node/workflows/Tests/badge.svg) [![codecov](https://codecov.io/gh/expo/expo-server-sdk-node/branch/master/graph/badge.svg)](https://codecov.io/gh/expo/expo-server-sdk-node)
+
 Server-side library for working with Expo using Node.js.
 
 If you have problems with the code in this repository, please file issues & bug reports at https://github.com/expo/expo. Thanks!
@@ -16,7 +17,10 @@ import { Expo } from 'expo-server-sdk';
 
 // Create a new Expo SDK client
 // optionally providing an access token if you have enabled push security
-let expo = new Expo({ accessToken: process.env.EXPO_ACCESS_TOKEN });
+let expo = new Expo({
+  accessToken: process.env.EXPO_ACCESS_TOKEN,
+  useFcmV1: false // this can be set to true in order to use the FCM v1 API
+});
 
 // Create the messages that you want to send to clients
 let messages = [];
@@ -67,7 +71,7 @@ let tickets = [];
 ...
 
 // Later, after the Expo push notification service has delivered the
-// notifications to Apple or Google (usually quickly, but allow the the service
+// notifications to Apple or Google (usually quickly, but allow the service
 // up to 30 minutes when under load), a "receipt" for each notification is
 // created. The receipts will be available for at least a day; stale receipts
 // are deleted.
@@ -85,7 +89,7 @@ let receiptIds = [];
 for (let ticket of tickets) {
   // NOTE: Not all tickets have IDs; for example, tickets for notifications
   // that could not be enqueued will have error information and no receipt ID.
-  if (ticket.id) {
+   if (ticket.status === 'ok') {
     receiptIds.push(ticket.id);
   }
 }
@@ -129,11 +133,12 @@ let receiptIdChunks = expo.chunkPushNotificationReceiptIds(receiptIds);
 
 The source code is in the `src/` directory and babel is used to turn it into ES5 that goes in the `build/` directory.
 
-To build, `npm run build`.
+To build, `yarn build`.
 
-To build and watch for changes, `npm run watch`.
+To build and watch for changes, `yarn watch`.
 
 ## See Also
 
-  * https://github.com/expo-community/expo-server-sdk-ruby
-  * https://github.com/expo-community/expo-server-sdk-python
+- https://github.com/expo-community/expo-server-sdk-ruby
+- https://github.com/expo-community/expo-server-sdk-python
+- https://github.com/katayama8000/expo-push-notification-client-rust

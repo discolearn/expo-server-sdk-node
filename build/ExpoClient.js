@@ -1,7 +1,11 @@
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
 }) : (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     o[k2] = m[k];
@@ -36,7 +40,8 @@ exports.Expo = void 0;
  * expo-server-sdk
  *
  * Use this if you are running Node on your server backend when you are working with Expo
- * https://expo.io
+ * Application Services
+ * https://expo.dev
  */
 const assert_1 = __importDefault(require("assert"));
 const node_fetch_1 = __importStar(require("node-fetch"));
@@ -63,10 +68,11 @@ const DEFAULT_CONCURRENT_REQUEST_LIMIT = 6;
 class Expo {
     constructor(options = {}) {
         this.httpAgent = options.httpAgent;
-        this.limitConcurrentRequests = promise_limit_1.default(options.maxConcurrentRequests != null
+        this.limitConcurrentRequests = (0, promise_limit_1.default)(options.maxConcurrentRequests != null
             ? options.maxConcurrentRequests
             : DEFAULT_CONCURRENT_REQUEST_LIMIT);
         this.accessToken = options.accessToken;
+        this.useFcmV1 = options.useFcmV1;
     }
     /**
      * Returns `true` if the token is an Expo push token
@@ -90,11 +96,15 @@ class Expo {
      */
     sendPushNotificationsAsync(messages) {
         return __awaiter(this, void 0, void 0, function* () {
+            const url = new URL(`${BASE_API_URL}/push/send`);
+            if (typeof this.useFcmV1 === 'boolean') {
+                url.searchParams.append('useFcmV1', String(this.useFcmV1));
+            }
             const actualMessagesCount = Expo._getActualMessageCount(messages);
             const data = yield this.limitConcurrentRequests(() => __awaiter(this, void 0, void 0, function* () {
-                return yield promise_retry_1.default((retry) => __awaiter(this, void 0, void 0, function* () {
+                return yield (0, promise_retry_1.default)((retry) => __awaiter(this, void 0, void 0, function* () {
                     try {
-                        return yield this.requestAsync(`${BASE_API_URL}/push/send`, {
+                        return yield this.requestAsync(url.toString(), {
                             httpMethod: 'post',
                             body: messages,
                             shouldCompress(body) {
@@ -215,7 +225,7 @@ class Expo {
             }
             if (options.body != null) {
                 const json = JSON.stringify(options.body);
-                assert_1.default(json != null, `JSON request body must not be null`);
+                (0, assert_1.default)(json != null, `JSON request body must not be null`);
                 if (options.shouldCompress(json)) {
                     requestBody = yield gzipAsync(Buffer.from(json));
                     requestHeaders.set('Content-Encoding', 'gzip');
@@ -225,7 +235,7 @@ class Expo {
                 }
                 requestHeaders.set('Content-Type', 'application/json');
             }
-            const response = yield node_fetch_1.default(url, {
+            const response = yield (0, node_fetch_1.default)(url, {
                 method: options.httpMethod,
                 body: requestBody,
                 headers: requestHeaders,
@@ -241,7 +251,7 @@ class Expo {
             try {
                 result = JSON.parse(textBody);
             }
-            catch (e) {
+            catch (_a) {
                 const apiError = yield this.getTextResponseErrorAsync(response, textBody);
                 throw apiError;
             }
@@ -259,7 +269,7 @@ class Expo {
             try {
                 result = JSON.parse(textBody);
             }
-            catch (e) {
+            catch (_a) {
                 return yield this.getTextResponseErrorAsync(response, textBody);
             }
             if (!result.errors || !Array.isArray(result.errors) || !result.errors.length) {
@@ -283,7 +293,7 @@ class Expo {
      * contains any other errors.
      */
     getErrorFromResult(response, result) {
-        assert_1.default(result.errors && result.errors.length > 0, `Expected at least one error from Expo`);
+        (0, assert_1.default)(result.errors && result.errors.length > 0, `Expected at least one error from Expo`);
         const [errorData, ...otherErrorData] = result.errors;
         const error = this.getErrorFromResultError(errorData);
         if (otherErrorData.length) {

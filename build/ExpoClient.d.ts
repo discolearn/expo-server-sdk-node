@@ -1,4 +1,3 @@
-/// <reference types="node" />
 import { Agent } from 'http';
 export declare class Expo {
     static pushNotificationChunkSizeLimit: number;
@@ -6,6 +5,7 @@ export declare class Expo {
     private httpAgent;
     private limitConcurrentRequests;
     private accessToken;
+    private useFcmV1;
     constructor(options?: ExpoClientOptions);
     /**
      * Returns `true` if the token is an Expo push token
@@ -44,13 +44,14 @@ export declare class Expo {
     static _getActualMessageCount(messages: ExpoPushMessage[]): number;
 }
 export default Expo;
-export declare type ExpoClientOptions = {
+export type ExpoClientOptions = {
     httpAgent?: Agent;
     maxConcurrentRequests?: number;
     accessToken?: string;
+    useFcmV1?: boolean;
 };
-export declare type ExpoPushToken = string;
-export declare type ExpoPushMessage = {
+export type ExpoPushToken = string;
+export type ExpoPushMessage = {
     to: ExpoPushToken | ExpoPushToken[];
     data?: object;
     title?: string;
@@ -69,24 +70,24 @@ export declare type ExpoPushMessage = {
     categoryId?: string;
     mutableContent?: boolean;
 };
-export declare type ExpoPushReceiptId = string;
-export declare type ExpoPushSuccessTicket = {
+export type ExpoPushReceiptId = string;
+export type ExpoPushSuccessTicket = {
     status: 'ok';
     id: ExpoPushReceiptId;
 };
-export declare type ExpoPushErrorTicket = ExpoPushErrorReceipt;
-export declare type ExpoPushTicket = ExpoPushSuccessTicket | ExpoPushErrorTicket;
-export declare type ExpoPushSuccessReceipt = {
+export type ExpoPushErrorTicket = ExpoPushErrorReceipt;
+export type ExpoPushTicket = ExpoPushSuccessTicket | ExpoPushErrorTicket;
+export type ExpoPushSuccessReceipt = {
     status: 'ok';
     details?: object;
     __debug?: any;
 };
-export declare type ExpoPushErrorReceipt = {
+export type ExpoPushErrorReceipt = {
     status: 'error';
     message: string;
     details?: {
-        error?: 'DeviceNotRegistered' | 'InvalidCredentials' | 'MessageTooBig' | 'MessageRateExceeded';
+        error?: 'DeveloperError' | 'DeviceNotRegistered' | 'ExpoError' | 'InvalidCredentials' | 'MessageRateExceeded' | 'MessageTooBig' | 'ProviderError';
     };
     __debug?: any;
 };
-export declare type ExpoPushReceipt = ExpoPushSuccessReceipt | ExpoPushErrorReceipt;
+export type ExpoPushReceipt = ExpoPushSuccessReceipt | ExpoPushErrorReceipt;
