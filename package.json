@@ -38,6 +38,7 @@
   },
   "homepage": "https://github.com/expo/expo-server-sdk-node#readme",
   "dependencies": {
+    "expo-server-sdk": "^3.10.0",
     "node-fetch": "^2.6.0",
     "promise-limit": "^2.7.0",
     "promise-retry": "^2.0.1"
